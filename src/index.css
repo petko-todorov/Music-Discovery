@@ -1,1 +1,10 @@
 @import 'tailwindcss';
+
+body {
+    background-image: url('assets/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    backdrop-filter: blur(5px);
+    min-height: 100vh;
+}
