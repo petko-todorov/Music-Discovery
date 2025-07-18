@@ -1,0 +1,1 @@
+export const api = "https://corsproxy.io/?https://genius.com/api/search/multi?q=";
