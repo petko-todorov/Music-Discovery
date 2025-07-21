@@ -2,16 +2,23 @@ import { useState } from 'react';
 import { api } from './api';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import { Ripples } from 'ldrs/react';
+import 'ldrs/react/Ripples.css';
 
 function App() {
     const [text, setText] = useState('');
     const [songs, setSongs] = useState({});
+    const [lyrics, setLyrics] = useState({});
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const findSongByLyrics = async (e) => {
         e.preventDefault();
 
         if (!text) return;
+
+        setLoading(true);
+        setError('');
 
         try {
             const res = await fetch(`${api}${text}`);
@@ -19,35 +26,56 @@ function App() {
             console.log(data);
 
             const sections = data.response.sections;
-            let song = sections.find((s) => s.type === 'song');
+            const song = sections.find((s) => s.type === 'song');
+            const lyrics = sections.find((s) => s.type === 'lyric');
 
-            if (song.hits.length === 0) {
-                song = sections.find((s) => s.type === 'lyric');
-            }
+            // if (song.hits.length === 0) {
+            //     song = sections.find((s) => s.type === 'lyric');
+            // }
 
-            if (song.hits.length === 0) {
+            if (song.hits.length === 0 && lyrics.hits.length === 0) {
                 setError('Song and lyrics not found');
                 return;
             }
 
-            const newData = {};
+            const songData = {};
             song.hits.forEach((hit) => {
                 console.log(hit.result);
                 const artist_name = hit.result.artist_names;
                 const title = hit.result.title;
                 const song_image = hit.result.song_art_image_thumbnail_url;
 
-                newData[artist_name] = {
+                songData[artist_name] = {
                     title,
                     song_image,
                 };
             });
+            setSongs(songData);
 
-            setSongs(newData);
+            const lyricsData = {};
+            lyrics.hits.forEach((hit) => {
+                console.log(hit.result);
+                const artist_name = hit.result.artist_names;
+                const title = hit.result.title;
+                const song_image = hit.result.song_art_image_thumbnail_url;
+
+                if (!songData.hasOwnProperty(artist_name)) {
+                    lyricsData[artist_name] = {
+                        title,
+                        song_image,
+                    };
+                }
+            });
+            setLyrics(lyricsData);
+
+            console.log('123', songs);
         } catch (error) {
             console.error(error);
+        } finally {
+            setLoading(false);
         }
     };
+
     return (
         <>
             <h1 className="text-3xl font-bold text-center text-white pt-10 mb-4">
@@ -75,30 +103,69 @@ function App() {
                 </Button>
             </form>
 
-            <h2 className="text-2xl font-bold text-center text-white mb-5">
+            <h2 className="text-2xl font-bold text-center text-white mb-2">
                 RESULTS
             </h2>
 
-            <div className="flex justify-center gap-5 flex-wrap">
-                {Object.keys(songs).map((artist) => (
-                    <div
-                        key={artist}
-                        className="flex flex-col items-center justify-end w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6"
-                    >
-                        <h1 className="text-lg font-bold text-white text-center">
-                            {artist}
-                        </h1>
-                        <h2 className="text-lg font-bold text-white text-center mb-3">
-                            {songs[artist].title}
-                        </h2>
-                        <img
-                            src={songs[artist].song_image}
-                            className="w-[200px]"
-                            alt={songs[artist].title}
-                        />
+            {loading ? (
+                <div className="text-center mt-20">
+                    <Ripples size="230" speed="2" color="#1976D2" />
+                </div>
+            ) : (
+                <>
+                    {Object.keys(songs).length > 0 && (
+                        <h3 className="text-2xl font-bold text-center text-white mb-3">
+                            Songs
+                        </h3>
+                    )}
+                    <div className="flex justify-center gap-5 flex-wrap">
+                        {Object.keys(songs).map((artist) => (
+                            <div
+                                key={artist}
+                                className="flex flex-col items-center justify-end w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 border-2 border-white rounded-lg pb-3 pt-1 px-2"
+                            >
+                                <h1 className="text-lg font-bold text-white text-center">
+                                    {artist}
+                                </h1>
+                                <h2 className="text-lg font-bold text-white text-center mb-3">
+                                    {songs[artist].title}
+                                </h2>
+                                <img
+                                    src={songs[artist].song_image}
+                                    className="w-[200px]"
+                                    alt={songs[artist].title}
+                                />
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
+
+                    {Object.keys(lyrics).length > 0 && (
+                        <h3 className="text-2xl font-bold text-center text-white my-3">
+                            Lyrics
+                        </h3>
+                    )}
+                    <div className="flex justify-center gap-5 flex-wrap">
+                        {Object.keys(lyrics).map((artist) => (
+                            <div
+                                key={artist}
+                                className="flex flex-col items-center justify-end w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 border-2 border-white rounded-lg pb-3 pt-1 px-2"
+                            >
+                                <h1 className="text-lg font-bold text-white text-center">
+                                    {artist}
+                                </h1>
+                                <h2 className="text-lg font-bold text-white text-center mb-3">
+                                    {lyrics[artist].title}
+                                </h2>
+                                <img
+                                    src={lyrics[artist].song_image}
+                                    className="w-[200px]"
+                                    alt={lyrics[artist].title}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
         </>
     );
 }
