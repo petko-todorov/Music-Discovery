@@ -122,14 +122,16 @@ function App() {
                         {Object.keys(songs).map((artist) => (
                             <div
                                 key={artist}
-                                className="flex flex-col items-center justify-end w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 border-2 border-white rounded-lg pb-3 pt-1 px-2"
+                                className="flex flex-col items-center justify-center w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 border-2 border-white rounded-lg pb-3 pt-1 px-2"
                             >
                                 <h1 className="text-lg font-bold text-white text-center">
                                     {artist}
                                 </h1>
+
                                 <h2 className="text-lg font-bold text-white text-center mb-3">
                                     {songs[artist].title}
                                 </h2>
+
                                 <img
                                     src={songs[artist].song_image}
                                     className="w-[200px]"
@@ -148,14 +150,16 @@ function App() {
                         {Object.keys(lyrics).map((artist) => (
                             <div
                                 key={artist}
-                                className="flex flex-col items-center justify-end w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 border-2 border-white rounded-lg pb-3 pt-1 px-2"
+                                className="flex flex-col items-center justify-center w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 border-2 border-white rounded-lg pb-3 pt-1 px-2"
                             >
                                 <h1 className="text-lg font-bold text-white text-center">
                                     {artist}
                                 </h1>
+
                                 <h2 className="text-lg font-bold text-white text-center mb-3">
                                     {lyrics[artist].title}
                                 </h2>
+
                                 <img
                                     src={lyrics[artist].song_image}
                                     className="w-[200px]"
