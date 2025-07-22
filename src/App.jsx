@@ -23,15 +23,11 @@ function App() {
         try {
             const res = await fetch(`${api}${text}`);
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             const sections = data.response.sections;
             const song = sections.find((s) => s.type === 'song');
             const lyrics = sections.find((s) => s.type === 'lyric');
-
-            // if (song.hits.length === 0) {
-            //     song = sections.find((s) => s.type === 'lyric');
-            // }
 
             if (song.hits.length === 0 && lyrics.hits.length === 0) {
                 setError('Song and lyrics not found');
@@ -44,10 +40,12 @@ function App() {
                 const artist_name = hit.result.artist_names;
                 const title = hit.result.title;
                 const song_image = hit.result.song_art_image_thumbnail_url;
+                const url = hit.result.url;
 
                 songData[artist_name] = {
                     title,
                     song_image,
+                    url,
                 };
             });
             setSongs(songData);
@@ -58,19 +56,19 @@ function App() {
                 const artist_name = hit.result.artist_names;
                 const title = hit.result.title;
                 const song_image = hit.result.song_art_image_thumbnail_url;
+                const url = hit.result.url;
 
                 if (!songData.hasOwnProperty(artist_name)) {
                     lyricsData[artist_name] = {
                         title,
                         song_image,
+                        url,
                     };
                 }
             });
             setLyrics(lyricsData);
-
-            console.log('123', songs);
         } catch (error) {
-            console.error(error);
+            setError(error.message);
         } finally {
             setLoading(false);
         }
@@ -79,7 +77,7 @@ function App() {
     return (
         <>
             <h1 className="text-3xl font-bold text-center text-white pt-10 mb-4">
-                🎧 Type a lyric, find the track
+                🎧 Type a lyric, find the track 🎧
             </h1>
 
             <form
@@ -98,19 +96,26 @@ function App() {
                     }}
                 />
 
-                <Button type="submit" variant="contained" size="medium">
+                <Button
+                    type="submit"
+                    variant="contained"
+                    size="medium"
+                    loading={loading}
+                >
                     Search
                 </Button>
             </form>
 
             <h2 className="text-2xl font-bold text-center text-white mb-2">
-                RESULTS
+                RESULT
             </h2>
 
             {loading ? (
                 <div className="text-center mt-20">
                     <Ripples size="230" speed="2" color="#1976D2" />
                 </div>
+            ) : error ? (
+                <p className="text-red-500 text-center text-3xl">{error}</p>
             ) : (
                 <>
                     {Object.keys(songs).length > 0 && (
@@ -137,6 +142,14 @@ function App() {
                                     className="w-[200px]"
                                     alt={songs[artist].title}
                                 />
+
+                                <a
+                                    href={songs[artist].url}
+                                    target="_blank"
+                                    className="text-lg text-white mt-3 px-3 py-1 bg-[#5585BF] rounded-xs"
+                                >
+                                    Lyrics link
+                                </a>
                             </div>
                         ))}
                     </div>
@@ -165,6 +178,14 @@ function App() {
                                     className="w-[200px]"
                                     alt={lyrics[artist].title}
                                 />
+
+                                <a
+                                    href={lyrics[artist].url}
+                                    target="_blank"
+                                    className="text-lg text-white mt-3 px-3 py-1 bg-[#5585BF] rounded-xs"
+                                >
+                                    Lyrics link
+                                </a>
                             </div>
                         ))}
                     </div>
