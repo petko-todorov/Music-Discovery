@@ -90,7 +90,7 @@ function App() {
                     placeholder="Type a lyric"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                    className="w-1/4 bg-[#1976d2]"
+                    className="w-1/3 max-lg:w-1/2 max-md:w-7/12 bg-[#1976d2]"
                     sx={{
                         input: { color: 'white' },
                     }}
