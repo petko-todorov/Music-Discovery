@@ -7,7 +7,9 @@
         "dev": "vite",
         "build": "vite build",
         "lint": "eslint .",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "start": "concurrently \"cd ../backend && .\\.venv\\Scripts\\activate && python manage.py runserver\" \"cd ../frontend && npm run dev\"",
+        "start:linux": "concurrently \"cd ../backend && ./.venv_linux/bin/python manage.py runserver\" \"cd ../frontend && npm run dev\""
     },
     "dependencies": {
         "@emotion/react": "^11.14.0",
