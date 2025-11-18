@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api } from './api';
+import { api, BASE_URL } from './api.js';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Ripples } from 'ldrs/react';
@@ -23,7 +23,6 @@ function App() {
         try {
             const res = await fetch(`${api}${text}`);
             const data = await res.json();
-            // console.log(data);
 
             const sections = data.response.sections;
             const song = sections.find((s) => s.type === 'song');
@@ -36,7 +35,6 @@ function App() {
 
             const songData = {};
             song.hits.forEach((hit) => {
-                console.log(hit.result);
                 const artist_name = hit.result.artist_names;
                 const title = hit.result.title;
                 const song_image = hit.result.song_art_image_thumbnail_url;
@@ -44,15 +42,15 @@ function App() {
 
                 songData[artist_name] = {
                     title,
-                    song_image,
+                    // song_image,
                     url,
+                    youtubeUrl: null,
                 };
             });
             setSongs(songData);
 
             const lyricsData = {};
             lyrics.hits.forEach((hit) => {
-                console.log(hit.result);
                 const artist_name = hit.result.artist_names;
                 const title = hit.result.title;
                 const song_image = hit.result.song_art_image_thumbnail_url;
@@ -61,12 +59,44 @@ function App() {
                 if (!songData.hasOwnProperty(artist_name)) {
                     lyricsData[artist_name] = {
                         title,
-                        song_image,
+                        // song_image,
                         url,
+                        youtubeUrl: null,
                     };
                 }
             });
             setLyrics(lyricsData);
+
+            const fetchYouTubeVideo = async (artist, title) => {
+                const query = encodeURIComponent(`${artist} ${title}`);
+                console.log(BASE_URL);
+
+                const res = await fetch(`${BASE_URL}/youtube?q=${query}`);
+                const data = await res.json();
+                return data.youtubeUrl;
+            };
+
+            Object.keys(songData).forEach(async (artist) => {
+                const videoUrl = await fetchYouTubeVideo(
+                    artist,
+                    songData[artist].title
+                );
+                setSongs((prev) => ({
+                    ...prev,
+                    [artist]: { ...prev[artist], youtubeUrl: videoUrl },
+                }));
+            });
+
+            Object.keys(lyricsData).forEach(async (artist) => {
+                const videoUrl = await fetchYouTubeVideo(
+                    artist,
+                    lyricsData[artist].title
+                );
+                setLyrics((prev) => ({
+                    ...prev,
+                    [artist]: { ...prev[artist], youtubeUrl: videoUrl },
+                }));
+            });
         } catch (error) {
             setError(error.message);
         } finally {
@@ -137,11 +167,19 @@ function App() {
                                     {songs[artist].title}
                                 </h2>
 
-                                <img
-                                    src={songs[artist].song_image}
-                                    className="w-[200px]"
-                                    alt={songs[artist].title}
-                                />
+                                {songs[artist].youtubeUrl && (
+                                    <iframe
+                                        width="200"
+                                        height="150"
+                                        src={`https://www.youtube.com/embed/${
+                                            songs[artist].youtubeUrl.split(
+                                                'v='
+                                            )[1]
+                                        }`}
+                                        title={`${songs[artist].title} - ${artist}`}
+                                        allowFullScreen
+                                    ></iframe>
+                                )}
 
                                 <a
                                     href={songs[artist].url}
@@ -173,11 +211,19 @@ function App() {
                                     {lyrics[artist].title}
                                 </h2>
 
-                                <img
-                                    src={lyrics[artist].song_image}
-                                    className="w-[200px]"
-                                    alt={lyrics[artist].title}
-                                />
+                                {lyrics[artist].youtubeUrl && (
+                                    <iframe
+                                        width="200"
+                                        height="150"
+                                        src={`https://www.youtube.com/embed/${
+                                            lyrics[artist].youtubeUrl.split(
+                                                'v='
+                                            )[1]
+                                        }`}
+                                        title={`${lyrics[artist].title} - ${artist}`}
+                                        allowFullScreen
+                                    ></iframe>
+                                )}
 
                                 <a
                                     href={lyrics[artist].url}
