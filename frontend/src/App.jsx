@@ -69,8 +69,6 @@ function App() {
 
             const fetchYouTubeVideo = async (artist, title) => {
                 const query = encodeURIComponent(`${artist} ${title}`);
-                console.log(BASE_URL);
-
                 const res = await fetch(`${BASE_URL}/youtube?q=${query}`);
                 const data = await res.json();
                 return data.youtubeUrl;
