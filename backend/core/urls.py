@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('youtube.urls')),
+    path('', include('youtube.urls')),  # "/" показва HTML статус
 ]
