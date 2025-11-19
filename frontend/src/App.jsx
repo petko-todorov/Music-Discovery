@@ -42,7 +42,7 @@ function App() {
 
                 songData[artist_name] = {
                     title,
-                    // song_image,
+                    song_image,
                     url,
                     youtubeUrl: null,
                 };
@@ -59,7 +59,7 @@ function App() {
                 if (!songData.hasOwnProperty(artist_name)) {
                     lyricsData[artist_name] = {
                         title,
-                        // song_image,
+                        song_image,
                         url,
                         youtubeUrl: null,
                     };
@@ -165,6 +165,13 @@ function App() {
                                     {songs[artist].title}
                                 </h2>
 
+                                {!songs[artist].youtubeUrl && (
+                                    <img
+                                        src={songs[artist].song_image}
+                                        className="w-[200px]"
+                                        alt={songs[artist].title}
+                                    />
+                                )}
                                 {songs[artist].youtubeUrl && (
                                     <iframe
                                         width="200"
@@ -209,6 +216,13 @@ function App() {
                                     {lyrics[artist].title}
                                 </h2>
 
+                                {!lyrics[artist].youtubeUrl && (
+                                    <img
+                                        src={lyrics[artist].song_image}
+                                        className="w-[200px]"
+                                        alt={lyrics[artist].title}
+                                    />
+                                )}
                                 {lyrics[artist].youtubeUrl && (
                                     <iframe
                                         width="200"
