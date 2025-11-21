@@ -11,7 +11,7 @@ from .models import YouTubeCache
 load_dotenv()
 
 YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
-YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY_2")
 
 
 class YouTubeSearchView(APIView):
@@ -38,7 +38,8 @@ class YouTubeSearchView(APIView):
             "type": "video"
         }
         resp = requests.get(YOUTUBE_SEARCH_URL, params=params).json()
-        video_id = resp['items'][0]['id']['videoId'] if resp.get('items') else None
+        video_id = resp['items'][0]['id']['videoId'] if resp.get(
+            'items') else None
         YouTubeCache.objects.create(
             query=query,
             video_id=video_id
